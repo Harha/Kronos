@@ -9,16 +9,14 @@
 namespace kronos
 {
 
-Server::Server(uint32_t revision, uint32_t maxplayers) : m_revision(revision), m_maxplayers(maxplayers)
+Server::Server()
 {
-    m_listener = Socket();
     m_running = false;
     m_gameinit = false;
     m_listenerinit = false;
     m_initialized = false;
 
     LOG("Server: Created a new Server object.");
-    LOG("Server: Revision: " << m_revision << " Max players: " << m_maxplayers);
 }
 
 Server::~Server()
@@ -88,7 +86,6 @@ void Server::run()
     {
         std::string input;
 
-        std::cout << "input: ";
         std::getline(std::cin, input);
 
         switch(cstr2int(input.c_str()))
@@ -139,8 +136,8 @@ void Server::ticklistener()
         m_listener.acceptcon(connection);
 
         LOG("Server: Accepted a new connection from <" << inet_ntoa(connection.getAddress().sin_addr) << ":" << ntohs(connection.getAddress().sin_port) << ">.")
-        char buffer;
-        connection.rData(&buffer, 1);
+
+        m_chandler.processLogin(connection);
     }
 
     LOG("Server: Listener main tick thread stopped...");

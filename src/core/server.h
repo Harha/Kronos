@@ -9,6 +9,7 @@
 
 // kronos includes
 #include "../networking/socket.h"
+#include "chandler.h"
 
 namespace kronos
 {
@@ -16,7 +17,7 @@ namespace kronos
 class Server
 {
 public:
-    Server(uint32_t revision = 317, uint32_t maxplayers = 1028);
+    Server();
     ~Server();
     int bind(const std::string ip = "0.0.0.0", const uint32_t port = 43594);
     int listen();
@@ -28,8 +29,7 @@ private:
     void ticklistener();
 
     Socket m_listener;
-    uint32_t m_revision;
-    uint32_t m_maxplayers;
+    ConnectionHandler m_chandler;
     std::atomic<bool> m_running;
     std::atomic<bool> m_gameinit;
     std::atomic<bool> m_listenerinit;

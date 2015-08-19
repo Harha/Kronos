@@ -5,6 +5,7 @@
 
 // std includes
 #include "winsock2.h"
+#include <cstdint>
 
 // kronos includes
 
@@ -20,8 +21,8 @@ public:
     int listenaddr();
     void acceptcon(Socket &socket);
     void closecon();
-    int sData(char *buffer, uint32_t size);
-    int rData(char *buffer, uint32_t size);
+    int sData(unsigned char *buffer, uint32_t size);
+    int rData(unsigned char *buffer, uint32_t size);
     void setWsaData(const WSADATA wsadata);
     void setSocket(const SOCKET socket);
     void setAddress(const SOCKADDR_IN address);

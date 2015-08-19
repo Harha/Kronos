@@ -13,7 +13,7 @@ int main(int argc, char **argv)
     LOG("Main: Kronos MMO Server, version " << VERSION_R << "." << VERSION_B << "." << VERSION_A);
 
     // Create the main server object
-    kronos::Server server(317, 1028);
+    kronos::Server server;
 
     // Create a variable to hold error messages
     int err = 0;

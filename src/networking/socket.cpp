@@ -83,9 +83,9 @@ void Socket::closecon()
     LOG("Socket: Close called, stopped listening for connections.");
 }
 
-int Socket::sData(char *buffer, uint32_t size)
+int Socket::sData(unsigned char *buffer, uint32_t size)
 {
-    int result = send(m_socket, buffer, size, 0);
+    int result = send(m_socket, reinterpret_cast<char *>(buffer), size, 0);
 
     if (result != SOCKET_ERROR)
     {
@@ -99,9 +99,9 @@ int Socket::sData(char *buffer, uint32_t size)
     return result;
 }
 
-int Socket::rData(char *buffer, uint32_t size)
+int Socket::rData(unsigned char *buffer, uint32_t size)
 {
-    int result = recv(m_socket, buffer, size, 0);
+    int result = recv(m_socket, reinterpret_cast<char *>(buffer), size, 0);
 
     if (result > 0)
     {
