@@ -9,7 +9,7 @@
 namespace kronos
 {
 
-enum LOGIN_CONSTANTS
+enum login_t
 {
     STATUS_EXCHANGE_DATA = 0,
     STATUS_DELAY = 1,
@@ -76,7 +76,7 @@ public:
     int processHandshake(Socket &socket);
     int processHeader(Socket &socket);
     int processPayload(Socket &socket);
-    int processRejection(Socket &socket);
+    int processRejection(Socket &socket, login_t status);
     int processSuccess(Socket &socket, LoginRequest loginrequest);
 private:
     unsigned char m_loginlength;

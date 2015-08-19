@@ -1,6 +1,9 @@
 // std includes
 #include <iostream>
 
+// c includes
+#include <cstring>
+
 // kronos includes
 #include "chandler.h"
 #include "../macros.h"
@@ -103,7 +106,7 @@ int ConnectionHandler::processHeader(Socket &socket)
 
     if (type != TYPE_STANDARD && type != TYPE_RECONNECTION)
     {
-        return processRejection(socket);
+        return processRejection(socket, STATUS_LOGIN_SERVER_REJECTED_SESSION);
     }
 
     m_reconnecting = type = TYPE_RECONNECTION;
@@ -136,7 +139,7 @@ int ConnectionHandler::processPayload(Socket &socket)
     // Reject the session if client detail isn't 0 or 1
     if (loginrequest.client_detail != 0 && loginrequest.client_detail != 1)
     {
-        return processRejection(socket);
+        return processRejection(socket, STATUS_LOGIN_SERVER_REJECTED_SESSION);
     }
 
     // CRCs, we don't care about them for now...
@@ -149,7 +152,7 @@ int ConnectionHandler::processPayload(Socket &socket)
     unsigned int length = buffer_i.read_byte();
     if (length != m_loginlength - 41)
     {
-        return processRejection(socket);
+        return processRejection(socket, STATUS_LOGIN_SERVER_REJECTED_SESSION);
     }
 
     // Read id
@@ -157,7 +160,7 @@ int ConnectionHandler::processPayload(Socket &socket)
 
     if (id != 10)
     {
-        return processRejection(socket);
+        return processRejection(socket, STATUS_LOGIN_SERVER_REJECTED_SESSION);
     }
 
     // Client / Server seeds
@@ -178,9 +181,9 @@ int ConnectionHandler::processPayload(Socket &socket)
     char *password = buffer_i.read_string();
 
     // Reject if username or password lengths aren't inside required bounds
-    if (sizeof(password) < 6 || sizeof(password) > 20 || sizeof(username) < 1 || sizeof(username) > 12)
+    if (strlen(password) < 6 || strlen(password) > 20 || strlen(username) < 1 || strlen(username) > 12)
     {
-        return processRejection(socket);
+        return processRejection(socket, STATUS_LOGIN_SERVER_REJECTED_SESSION);
     }
 
     // Continue reading / assigning user data
@@ -191,13 +194,13 @@ int ConnectionHandler::processPayload(Socket &socket)
     return processSuccess(socket, loginrequest);
 }
 
-int ConnectionHandler::processRejection(Socket &socket)
+int ConnectionHandler::processRejection(Socket &socket, login_t status)
 {
     // Allocate the o buffer for us
     Buffer buffer_o(1);
 
     // Send a rejected response
-    buffer_o.write_byte(STATUS_LOGIN_SERVER_REJECTED_SESSION);
+    buffer_o.write_byte(status);
 
     if (socket.sData(buffer_o.getDataStart(), buffer_o.getData() - buffer_o.getDataStart()) < 1)
     {
@@ -205,7 +208,7 @@ int ConnectionHandler::processRejection(Socket &socket)
         return 1;
     }
 
-    return STATUS_LOGIN_SERVER_REJECTED_SESSION;
+    return status;
 }
 
 int ConnectionHandler::processSuccess(Socket &socket, LoginRequest loginrequest)
